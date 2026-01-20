@@ -13,7 +13,7 @@ private val RecipesAppDarkColorScheme = darkColorScheme(
     tertiaryContainer = SliderTrackColorDark,
     background = BackgroundColorDark,
     surface = SurfaceColorDark,
-    outline = DividerColorDark
+    outline = DividerColorDark,
 )
 
 private val RecipesAppLightColorScheme = lightColorScheme(
@@ -23,7 +23,8 @@ private val RecipesAppLightColorScheme = lightColorScheme(
     tertiaryContainer = SliderTrackColor,
     background = BackgroundColor,
     surface = SurfaceColor,
-    outline = DividerColor
+    outline = DividerColor,
+    secondary = TextSecondaryColor
 )
 
 @Composable
