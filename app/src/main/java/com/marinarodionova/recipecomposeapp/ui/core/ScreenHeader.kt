@@ -1,4 +1,4 @@
-package com.marinarodionova.recipecomposeapp.ui
+package com.marinarodionova.recipecomposeapp.ui.core
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,8 +24,8 @@ import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun ScreenHeader(
-    titleResId: Int,
-    imageResId: Int
+    title: String,
+    imagePainter: Painter
 ) {
     Box(
         modifier = Modifier
@@ -33,7 +34,7 @@ fun ScreenHeader(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painterResource(imageResId),
+            imagePainter,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
@@ -46,7 +47,7 @@ fun ScreenHeader(
                 .padding(start = Dimens.standardPadding, bottom = Dimens.standardPadding)
         ) {
             Text(
-                text = stringResource(titleResId).uppercase(),
+                text = title.uppercase(),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(Dimens.ttlPadding)
@@ -60,8 +61,8 @@ fun ScreenHeader(
 fun ScreenHeaderLightPreview() {
     RecipeComposeAppTheme {
         ScreenHeader(
-            imageResId = R.drawable.bcg_categories,
-            titleResId = R.string.title_category
+            imagePainter = painterResource(R.drawable.bcg_categories),
+            title = stringResource(R.string.title_category)
         )
     }
 }

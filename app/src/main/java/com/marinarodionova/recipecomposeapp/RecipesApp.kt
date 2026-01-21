@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import com.marinarodionova.recipecomposeapp.ui.navigation.BottomNavigation
 import com.marinarodionova.recipecomposeapp.ui.categories.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.ui.favorites.FavoritesScreen
+import com.marinarodionova.recipecomposeapp.ui.recipes.RecipesScreen
 import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
@@ -27,7 +28,8 @@ fun RecipesApp() {
             bottomBar = {
                 BottomNavigation(
                     onCategoriesClick = { currentScreen = ScreenId.CATEGORIES },
-                    onFavoriteClick = { currentScreen = ScreenId.FAVORITES }
+                    onFavoriteClick = { currentScreen = ScreenId.FAVORITES },
+                    onRecipesClick = { currentScreen = ScreenId.RECIPES }
                 )
             }
         ) { paddingValues ->
@@ -41,6 +43,12 @@ fun RecipesApp() {
 
                 ScreenId.FAVORITES -> {
                     FavoritesScreen(
+                        modifier = Modifier.padding(paddingValues)
+                    )
+                }
+
+                ScreenId.RECIPES -> {
+                    RecipesScreen(
                         modifier = Modifier.padding(paddingValues)
                     )
                 }

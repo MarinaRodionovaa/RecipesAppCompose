@@ -1,5 +1,6 @@
 package com.marinarodionova.recipecomposeapp.ui.navigation
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,49 +30,71 @@ import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun BottomNavigation(
+    onRecipesClick: () -> Unit,
     onCategoriesClick: () -> Unit,
     onFavoriteClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = standardPadding)
-            .padding(
-                top = Dimens.halfMargin,
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-            )
-    ) {
-        Button(
-            onClick = onCategoriesClick,
-            shape = RoundedCornerShape(radiusSmall),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
+    Column {
+        Row(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = standardPadding)
         ) {
-            Text(
-                text = stringResource(R.string.title_category).uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.surface
-            )
+            Button(
+                onClick = onRecipesClick,
+                shape = RoundedCornerShape(radiusSmall),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = stringResource(R.string.title_recipe).uppercase(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.surface
+                )
+            }
         }
-        Spacer(modifier = Modifier.size(Dimens.smallMargin))
-        Button(
-            onClick = onFavoriteClick,
-            shape = RoundedCornerShape(radiusSmall),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = standardPadding)
+                .padding(
+                    top = Dimens.halfMargin,
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                )
         ) {
-            Text(
-                text = stringResource(R.string.title_favorite).uppercase(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSecondary,
-                modifier = Modifier.padding(end = ttlPadding)
-            )
-            Icon(
-                painter = painterResource(R.drawable.ic_heart_empty),
-                contentDescription = "Добавить в избранное",
-                modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.surface
-            )
+            Button(
+                onClick = onCategoriesClick,
+                shape = RoundedCornerShape(radiusSmall),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.tertiary),
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = stringResource(R.string.title_category).uppercase(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.surface
+                )
+            }
+            Spacer(modifier = Modifier.size(Dimens.smallMargin))
+            Button(
+                onClick = onFavoriteClick,
+                shape = RoundedCornerShape(radiusSmall),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
+            ) {
+                Text(
+                    text = stringResource(R.string.title_favorite).uppercase(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier.padding(end = ttlPadding)
+                )
+                Icon(
+                    painter = painterResource(R.drawable.ic_heart_empty),
+                    contentDescription = "Добавить в избранное",
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.surface
+                )
+            }
         }
     }
 }
@@ -85,7 +108,8 @@ fun BottomNavigationLightPreview() {
     RecipeComposeAppTheme {
         BottomNavigation(
             onCategoriesClick = {},
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onRecipesClick = {}
         )
     }
 }
@@ -100,7 +124,8 @@ fun BottomNavigationDarkPreview() {
     RecipeComposeAppTheme {
         BottomNavigation(
             onCategoriesClick = {},
-            onFavoriteClick = {}
+            onFavoriteClick = {},
+            onRecipesClick = {}
         )
     }
 }
