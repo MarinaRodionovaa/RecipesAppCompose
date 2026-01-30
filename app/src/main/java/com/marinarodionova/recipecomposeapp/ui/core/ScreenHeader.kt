@@ -1,6 +1,7 @@
 package com.marinarodionova.recipecomposeapp.ui.core
 
-import androidx.compose.foundation.Image
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,19 +14,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun ScreenHeader(
-    title: String,
-    imagePainter: Painter
+    title: String? = null,
+    @StringRes titleResId: Int? = null,
+    imageUrl: String? = null,
+    @DrawableRes imageResId: Int? = null,
 ) {
     Box(
         modifier = Modifier
@@ -33,8 +37,11 @@ fun ScreenHeader(
             .height(Dimens.headerHeight),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            imagePainter,
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl ?: imageResId)
+                .crossfade(true)
+                .build(),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
@@ -47,7 +54,7 @@ fun ScreenHeader(
                 .padding(start = Dimens.standardPadding, bottom = Dimens.standardPadding)
         ) {
             Text(
-                text = title.uppercase(),
+                text = (title ?: (titleResId?.let { stringResource(id = it) } ?: "")).uppercase(),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(Dimens.ttlPadding)
@@ -61,8 +68,8 @@ fun ScreenHeader(
 fun ScreenHeaderLightPreview() {
     RecipeComposeAppTheme {
         ScreenHeader(
-            imagePainter = painterResource(R.drawable.bcg_categories),
-            title = stringResource(R.string.title_category)
+            imageResId = R.drawable.bcg_categories,
+            titleResId = R.string.title_category
         )
     }
 }
