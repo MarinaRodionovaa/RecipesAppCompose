@@ -24,8 +24,11 @@ object Dimens {
     // Heights / Sizes
     val headerHeight = 234.dp
     val cardElevation = 4.dp
-    val cardCategoryHeight = 130.dp
-    val cardRecipeHeight = 100.dp
+    val cardImageCategoryHeight = 126.dp
+    val cardCategoryHeight = 220.dp
+    val cardCategoryWith = 156.dp
+    val cardImageRecipeHeight = 100.dp
+    val cardRecipeHeight = 132.dp
 
     // Divider
     val dividerThickness = 1.dp
