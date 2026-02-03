@@ -50,7 +50,7 @@ fun RecipesScreen(modifier: Modifier = Modifier, categoryId: Int) {
                 verticalArrangement = Arrangement.spacedBy(Dimens.standardMargin),
                 contentPadding = PaddingValues(Dimens.standardMargin),
             ) {
-                items(items = recipes) { recipe ->
+                items(recipes, key = { it.id }) { recipe ->
                     RecipeItem(
                         imageUrl = recipe.imageUrl,
                         title = recipe.title,

@@ -36,7 +36,7 @@ fun CategoriesScreen(
             verticalArrangement = Arrangement.spacedBy(Dimens.standardMargin),
             contentPadding = PaddingValues(Dimens.standardMargin),
         ) {
-            items(items = categories) { category ->
+            items(categories, key = { it.id }) { category ->
                 val categoryUi = category.toUiModel()
                 CategoryItem(
                     imageUrl = categoryUi.imageUrl,

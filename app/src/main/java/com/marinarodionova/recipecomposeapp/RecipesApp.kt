@@ -47,10 +47,18 @@ fun RecipesApp() {
                     modifier = Modifier.padding(paddingValues)
                 )
 
-                ScreenId.RECIPES -> RecipesScreen(
-                    modifier = Modifier.padding(paddingValues),
-                    categoryId = selectedCategoryId ?: error("Category ID is required")
-                )
+                ScreenId.RECIPES -> {
+                    val categoryId = selectedCategoryId
+
+                    if (categoryId != null) {
+                        RecipesScreen(
+                            modifier = Modifier.padding(paddingValues),
+                            categoryId = categoryId
+                        )
+                    } else {
+                        currentScreen = ScreenId.CATEGORIES
+                    }
+                }
             }
         }
     }
