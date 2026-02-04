@@ -66,11 +66,15 @@ object RecipesRepositoryStub {
                 "4. Смазать нижние половинки булочек горчицей и кетчупом, затем положите лист салата, котлету, кольца помидора и закройте верхней половинкой булочки.",
                 "5. Подавайте бургеры горячими с картофельными чипсами или картофельным пюре."
             ),
-            imageUrl = "https://images.google.com"
+            imageUrl = "burger.png"
         )
     )
 
     fun getCategories(): List<CategoryDto> = categories
+
+    fun getCategoryByCategoryId(categoryId: Int): CategoryDto {
+        return categories.first { it.id == categoryId }
+    }
 
     fun getRecipesByCategoryId(categoryId: Int): List<RecipeDto> {
         return when (categoryId) {

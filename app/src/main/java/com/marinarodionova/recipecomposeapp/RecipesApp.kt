@@ -20,6 +20,7 @@ import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 @Composable
 fun RecipesApp() {
     var currentScreen by remember { mutableStateOf(ScreenId.CATEGORIES) }
+    var selectedCategoryId by remember { mutableStateOf<Int?>(null) }
 
     RecipeComposeAppTheme {
         Scaffold(
@@ -29,28 +30,34 @@ fun RecipesApp() {
                 BottomNavigation(
                     onCategoriesClick = { currentScreen = ScreenId.CATEGORIES },
                     onFavoriteClick = { currentScreen = ScreenId.FAVORITES },
-                    onRecipesClick = { currentScreen = ScreenId.RECIPES }
                 )
             }
         ) { paddingValues ->
 
             when (currentScreen) {
-                ScreenId.CATEGORIES -> {
-                    CategoriesScreen(
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                }
+                ScreenId.CATEGORIES -> CategoriesScreen(
+                    modifier = Modifier.padding(paddingValues),
+                    onCategoryClick = { category ->
+                        selectedCategoryId = category.id
+                        currentScreen = ScreenId.RECIPES
+                    }
+                )
 
-                ScreenId.FAVORITES -> {
-                    FavoritesScreen(
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                }
+                ScreenId.FAVORITES -> FavoritesScreen(
+                    modifier = Modifier.padding(paddingValues)
+                )
 
                 ScreenId.RECIPES -> {
-                    RecipesScreen(
-                        modifier = Modifier.padding(paddingValues)
-                    )
+                    val categoryId = selectedCategoryId
+
+                    if (categoryId != null) {
+                        RecipesScreen(
+                            modifier = Modifier.padding(paddingValues),
+                            categoryId = categoryId
+                        )
+                    } else {
+                        currentScreen = ScreenId.CATEGORIES
+                    }
                 }
             }
         }
