@@ -13,7 +13,6 @@ import com.marinarodionova.recipecomposeapp.R
 import androidx.compose.ui.tooling.preview.Preview
 import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.marinarodionova.recipecomposeapp.ui.categories.components.CategoryItem
-import com.marinarodionova.recipecomposeapp.ui.categories.model.CategoryUiModel
 import com.marinarodionova.recipecomposeapp.ui.categories.model.toUiModel
 import com.marinarodionova.recipecomposeapp.ui.core.ScreenHeader
 import com.marinarodionova.recipecomposeapp.ui.theme.Dimens
@@ -22,7 +21,7 @@ import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
-    onCategoryClick: (category: CategoryUiModel) -> Unit
+    onCategoryClick: (category: Int) -> Unit
 ) {
     val categories = RecipesRepositoryStub.getCategories()
     Column(modifier = modifier) {
@@ -42,7 +41,7 @@ fun CategoriesScreen(
                     imageUrl = categoryUi.imageUrl,
                     title = categoryUi.title,
                     description = categoryUi.description,
-                    onCLick = { onCategoryClick(categoryUi) }
+                    onCLick = { onCategoryClick(categoryUi.id) }
                 )
             }
         }
