@@ -6,7 +6,8 @@ import com.marinarodionova.recipecomposeapp.R
 
 val montserratFontFamily = FontFamily(
     Font(resId = R.font.montserrat_regular),
-    Font(resId = R.font.montserrat_medium)
+    Font(resId = R.font.montserrat_medium),
+    Font(resId = R.font.montserrat_semi_bold)
 )
 
 val montserratAlternatesFontFamily = FontFamily(
