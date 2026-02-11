@@ -31,7 +31,7 @@ import com.marinarodionova.recipecomposeapp.ui.core.EmptyPlaceholder
 fun RecipesScreen(
     modifier: Modifier = Modifier,
     categoryId: Int,
-    onRecipeClick: (Int, RecipeUiModel) -> Unit,
+    onRecipeClick: (Int) -> Unit,
 ) {
     var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
     val category = RecipesRepositoryStub.getCategoryByCategoryId(categoryId).toUiModel()
@@ -58,7 +58,7 @@ fun RecipesScreen(
                     RecipeItem(
                         imageUrl = recipe.imageUrl,
                         title = recipe.title,
-                        onCLick = { onRecipeClick(recipe.id, recipe) }
+                        onCLick = { onRecipeClick(recipe.id) }
                     )
                 }
             }
@@ -74,6 +74,6 @@ fun RecipesScreen(
 @Composable
 fun CategoriesScreenPreview() {
     RecipeComposeAppTheme {
-        RecipesScreen(categoryId = 0, onRecipeClick = { _, _ -> })
+        RecipesScreen(categoryId = 0, onRecipeClick = { _ -> })
     }
 }

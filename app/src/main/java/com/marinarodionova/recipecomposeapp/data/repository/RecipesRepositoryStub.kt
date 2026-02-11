@@ -82,4 +82,8 @@ object RecipesRepositoryStub {
             else -> emptyList()
         }
     }
+
+    fun getRecipesByRecipeId(recipeId: Int): RecipeDto {
+        return recipes.first { it.id == recipeId }
+    }
 }

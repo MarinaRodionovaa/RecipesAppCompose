@@ -11,7 +11,6 @@ import com.marinarodionova.recipecomposeapp.ui.categories.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.ui.favorites.FavoritesScreen
 import com.marinarodionova.recipecomposeapp.ui.recipes.RecipesScreen
-import com.marinarodionova.recipecomposeapp.ui.recipes.model.RecipeUiModel
 
 @Composable
 fun AppNavHost(
@@ -42,11 +41,7 @@ fun AppNavHost(
 
             RecipesScreen(
                 categoryId = categoryId,
-                onRecipeClick = { recipeId, recipe ->
-                    navHostController.currentBackStackEntry
-                        ?.savedStateHandle
-                        ?.set(KEY_RECIPE_OBJECT, recipe)
-
+                onRecipeClick = { recipeId ->
                     navHostController.navigate(
                         Destination.RecipeDetails.createRoute(recipeId)
                     )
@@ -54,13 +49,14 @@ fun AppNavHost(
             )
         }
 
-        composable(Destination.RecipeDetails.route) {
-            val recipe = navHostController.previousBackStackEntry
-                ?.savedStateHandle
-                ?.get<RecipeUiModel>(KEY_RECIPE_OBJECT)
-            if (recipe != null) {
-                RecipeDetailsScreen(recipe = recipe)
-            }
+        composable(
+            route = Destination.RecipeDetails.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+
+            val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 0
+
+            RecipeDetailsScreen(recipeId = recipeId)
         }
     }
 }

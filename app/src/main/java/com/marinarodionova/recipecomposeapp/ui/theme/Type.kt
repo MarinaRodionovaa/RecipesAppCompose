@@ -30,6 +30,12 @@ val recipesAppTypography = Typography(
         fontSize = 16.sp
     ),
 
+    labelSmall = TextStyle(
+        fontFamily = montserratFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp
+    ),
+
     // Основной текст
     bodyMedium = TextStyle(
         fontFamily = montserratFontFamily,
@@ -65,6 +71,7 @@ fun TypographyPreview() {
             Text("bodyMedium - Основной текст", style = MaterialTheme.typography.bodyMedium)
             Text("bodySmall - Мелкий текст", style = MaterialTheme.typography.bodySmall)
             Text("labelLarge - Кнопки", style = MaterialTheme.typography.labelLarge)
+            Text("labelSmall - Кнопки", style = MaterialTheme.typography.labelSmall)
         }
     }
 }
