@@ -1,21 +1,45 @@
 package com.marinarodionova.recipecomposeapp.ui.navigation
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
-
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.marinarodionova.recipecomposeapp.Constants
 import com.marinarodionova.recipecomposeapp.ui.categories.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.ui.favorites.FavoritesScreen
 import com.marinarodionova.recipecomposeapp.ui.recipes.RecipesScreen
+import kotlinx.coroutines.delay
 
 @Composable
 fun AppNavHost(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    deepLinkIntent: Intent?
 ) {
+    LaunchedEffect(deepLinkIntent) {
+        deepLinkIntent?.data?.let { uri ->
+            val recipeId: Int? = when (uri.scheme) {
+                Constants.DEEP_LINK_SCHEME ->
+                    if (uri.host == "recipe") uri.pathSegments[0].toIntOrNull() else null
+
+                "https", "http" ->
+                    if (uri.pathSegments[0] == "recipe") uri.pathSegments[1].toIntOrNull() else null
+
+                else -> null
+            }
+
+            if (recipeId != null) {
+                delay(100)
+                navHostController.navigate(Destination.RecipeDetails.createRoute(recipeId))
+            }
+        }
+    }
+
+
     NavHost(
         navController = navHostController,
         startDestination = Destination.Categories.route
@@ -51,11 +75,9 @@ fun AppNavHost(
 
         composable(
             route = Destination.RecipeDetails.route,
-            arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+            arguments = listOf(navArgument(Constants.PARAM_RECIPE_ID) { type = NavType.IntType })
         ) { backStackEntry ->
-
-            val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 0
-
+            val recipeId = backStackEntry.arguments?.getInt(Constants.PARAM_RECIPE_ID) ?: 0
             RecipeDetailsScreen(recipeId = recipeId)
         }
     }

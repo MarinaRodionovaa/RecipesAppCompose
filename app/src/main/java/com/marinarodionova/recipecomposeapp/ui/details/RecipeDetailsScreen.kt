@@ -23,8 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.marinarodionova.recipecomposeapp.ui.core.ScreenHeader
-import com.marinarodionova.recipecomposeapp.ui.recipes.model.RecipeUiModel
 import com.marinarodionova.recipecomposeapp.ui.recipes.model.toUiModel
 import com.marinarodionova.recipecomposeapp.ui.theme.Dimens
 import androidx.compose.runtime.setValue
@@ -34,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.ui.recipes.model.IngredientUiModel
 import kotlin.math.roundToInt
+import androidx.compose.ui.platform.LocalContext
 
 private const val MIN_PORTIONS = 1
 private const val MAX_PORTIONS = 10
@@ -61,9 +60,16 @@ fun RecipeDetailsScreen(recipeId: Int) {
             }
         }
     }
+    val context = LocalContext.current
 
     LazyColumn {
-        item { RecipeHeader(recipe) }
+        item {
+            RecipeHeader(
+                recipe = recipe,
+                context = context,
+                modifier = Modifier
+            )
+        }
         item {
             PortionsSlider(
                 currentPortions = currentPortions,
@@ -78,9 +84,12 @@ fun RecipeDetailsScreen(recipeId: Int) {
 }
 
 @Composable
-fun IngredientsList(scaledIngredients: List<IngredientUiModel>) {
+fun IngredientsList(
+    scaledIngredients: List<IngredientUiModel>,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(Dimens.standardPadding)
             .clip(RoundedCornerShape(Dimens.radiusSmall))
@@ -88,7 +97,10 @@ fun IngredientsList(scaledIngredients: List<IngredientUiModel>) {
             .padding(Dimens.mediumPadding)
     ) {
         scaledIngredients.forEachIndexed { index, ingredient ->
-            IngredientItem(ingredient = ingredient)
+            IngredientItem(
+                ingredient = ingredient,
+                modifier = Modifier
+            )
 
             if (index < scaledIngredients.lastIndex) {
                 HorizontalDivider(
@@ -102,10 +114,12 @@ fun IngredientsList(scaledIngredients: List<IngredientUiModel>) {
 }
 
 @Composable
-fun IngredientItem(ingredient: IngredientUiModel) {
+fun IngredientItem(
+    ingredient: IngredientUiModel,
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
 
     ) {
@@ -128,28 +142,19 @@ fun IngredientItem(ingredient: IngredientUiModel) {
     }
 }
 
-@Composable
-fun RecipeHeader(recipe: RecipeUiModel) {
-    ScreenHeader(
-        title = recipe.title,
-        imageUrl = recipe.imageUrl
-    )
-    Text(
-        text = stringResource(R.string.title_ingredient).uppercase(),
-        style = MaterialTheme.typography.displayLarge,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = Dimens.standardPadding, top = Dimens.standardPadding)
-    )
-
-}
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortionsSlider(
     currentPortions: Int,
-    onPortionsChange: (Int) -> Unit
+    onPortionsChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    Text(
+        text = stringResource(R.string.title_ingredient).uppercase(),
+        style = MaterialTheme.typography.displayLarge,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier.padding(start = Dimens.standardPadding, top = Dimens.standardPadding)
+    )
     Text(
         text = ("${stringResource(R.string.title_portion)} $currentPortions"),
         style = MaterialTheme.typography.labelSmall,
@@ -247,10 +252,10 @@ fun formatSmartAmount(raw: String): String {
 }
 
 @Composable
-fun InstructionItem(method: String) {
+fun InstructionItem(method: String, modifier: Modifier = Modifier) {
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
 
