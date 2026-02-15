@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,7 @@ import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.ui.recipes.model.IngredientUiModel
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
+import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 
 private const val MIN_PORTIONS = 1
 private const val MAX_PORTIONS = 10
@@ -41,13 +43,16 @@ private const val DEFAULT_PORTIONS = 1
 private const val PINCH_TEXT = "щепотка"
 
 @Composable
-fun RecipeDetailsScreen(recipeId: Int) {
+fun RecipeDetailsScreen(
+    recipeId: Int, isFavorite: Boolean,
+    onFavoriteToggle: () -> Unit
+) {
     val portions = DEFAULT_PORTIONS
     val recipe = RecipesRepositoryStub.getRecipesByRecipeId(recipeId).toUiModel()
 
-    var currentPortions by remember { mutableIntStateOf(portions) }
+    var currentPortions by rememberSaveable { mutableIntStateOf(portions) }
 
-    val scaledIngredients = remember(currentPortions) {
+    val scaledIngredients = remember(recipe.ingredients, currentPortions) {
         recipe.ingredients.map { ingredient ->
             val value = ingredient.quantity.toDoubleOrNull()
 
@@ -67,7 +72,9 @@ fun RecipeDetailsScreen(recipeId: Int) {
             RecipeHeader(
                 recipe = recipe,
                 context = context,
-                modifier = Modifier
+                modifier = Modifier,
+                isFavorite = isFavorite,
+                onFavoriteToggle = onFavoriteToggle
             )
         }
         item {
@@ -277,5 +284,5 @@ fun InstructionItem(method: String, modifier: Modifier = Modifier) {
 )
 @Composable
 fun RecipeDetailsScreenPreview() {
-    RecipeDetailsScreen(recipeId = 0)
+    RecipeComposeAppTheme { RecipeDetailsScreen(recipeId = 0, false) {} }
 }
