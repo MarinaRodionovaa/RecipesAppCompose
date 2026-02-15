@@ -61,4 +61,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.androidx.navigation.compose)
+    implementation(platform(libs.androidx.compose.bom.v2024xxxx))
+    implementation(libs.material.icons.extended)
 }
