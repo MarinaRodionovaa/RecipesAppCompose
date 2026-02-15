@@ -3,6 +3,10 @@ package com.marinarodionova.recipecomposeapp.ui.navigation
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -78,7 +82,11 @@ fun AppNavHost(
             arguments = listOf(navArgument(Constants.PARAM_RECIPE_ID) { type = NavType.IntType })
         ) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getInt(Constants.PARAM_RECIPE_ID) ?: 0
-            RecipeDetailsScreen(recipeId = recipeId)
+            var isFavorite by rememberSaveable { mutableStateOf(false) }
+            RecipeDetailsScreen(
+                recipeId = recipeId,
+                isFavorite = isFavorite,
+                onFavoriteToggle = { isFavorite = !isFavorite })
         }
     }
 }
