@@ -3,10 +3,7 @@ package com.marinarodionova.recipecomposeapp.ui.navigation
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +14,7 @@ import com.marinarodionova.recipecomposeapp.ui.categories.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.ui.favorites.FavoritesScreen
 import com.marinarodionova.recipecomposeapp.ui.recipes.RecipesScreen
+import com.marinarodionova.recipecomposeapp.utils.FavoritePrefsManager
 import kotlinx.coroutines.delay
 
 @Composable
@@ -57,7 +55,13 @@ fun AppNavHost(
         }
 
         composable(route = Destination.Favorites.route) {
-            FavoritesScreen()
+            val context = LocalContext.current
+            val favoritePrefsManager = FavoritePrefsManager(context)
+            FavoritesScreen(favoritePref = favoritePrefsManager, onRecipeClick = { recipeId ->
+                navHostController.navigate(
+                    Destination.RecipeDetails.createRoute(recipeId)
+                )
+            })
         }
 
         composable(
@@ -82,11 +86,12 @@ fun AppNavHost(
             arguments = listOf(navArgument(Constants.PARAM_RECIPE_ID) { type = NavType.IntType })
         ) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getInt(Constants.PARAM_RECIPE_ID) ?: 0
-            var isFavorite by rememberSaveable { mutableStateOf(false) }
+            val context = LocalContext.current
+            val favoritePrefsManager = FavoritePrefsManager(context)
             RecipeDetailsScreen(
                 recipeId = recipeId,
-                isFavorite = isFavorite,
-                onFavoriteToggle = { isFavorite = !isFavorite })
+                favoritePrefsManager
+            )
         }
     }
 }
