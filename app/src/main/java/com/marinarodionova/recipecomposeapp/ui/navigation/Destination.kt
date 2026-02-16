@@ -14,7 +14,7 @@ sealed class Destination(val route: String) {
     companion object {
         private const val ROUTE_CATEGORIES = "categories"
         private const val ROUTE_RECIPES = "recipes"
-        private const val ROUTE_RECIPE_DETAILS = "ROUTE_RECIPE_DETAILS"
+        private const val ROUTE_RECIPE_DETAILS = "recipe"
         private const val ROUTE_FAVORITES = "favorites"
     }
 }
