@@ -22,6 +22,8 @@ fun AppNavHost(
     navHostController: NavHostController,
     deepLinkIntent: Intent?
 ) {
+    val context = LocalContext.current
+    val favoritePrefsManager = FavoritePrefsManager(context)
     LaunchedEffect(deepLinkIntent) {
         deepLinkIntent?.data?.let { uri ->
             val recipeId: Int? = when (uri.scheme) {
@@ -55,8 +57,6 @@ fun AppNavHost(
         }
 
         composable(route = Destination.Favorites.route) {
-            val context = LocalContext.current
-            val favoritePrefsManager = FavoritePrefsManager(context)
             FavoritesScreen(favoritePref = favoritePrefsManager, onRecipeClick = { recipeId ->
                 navHostController.navigate(
                     Destination.RecipeDetails.createRoute(recipeId)
@@ -86,8 +86,6 @@ fun AppNavHost(
             arguments = listOf(navArgument(Constants.PARAM_RECIPE_ID) { type = NavType.IntType })
         ) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getInt(Constants.PARAM_RECIPE_ID) ?: 0
-            val context = LocalContext.current
-            val favoritePrefsManager = FavoritePrefsManager(context)
             RecipeDetailsScreen(
                 recipeId = recipeId,
                 favoritePrefsManager
