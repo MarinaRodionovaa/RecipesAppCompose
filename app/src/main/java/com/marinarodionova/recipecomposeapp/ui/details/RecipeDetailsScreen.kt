@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import com.marinarodionova.recipecomposeapp.ui.recipes.model.IngredientUiModel
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
 import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import com.marinarodionova.recipecomposeapp.utils.FavoritePrefsManager
 
 private const val MIN_PORTIONS = 1
 private const val MAX_PORTIONS = 10
@@ -44,8 +46,8 @@ private const val PINCH_TEXT = "щепотка"
 
 @Composable
 fun RecipeDetailsScreen(
-    recipeId: Int, isFavorite: Boolean,
-    onFavoriteToggle: () -> Unit
+    recipeId: Int,
+    favoritePrefs: FavoritePrefsManager
 ) {
     val portions = DEFAULT_PORTIONS
     val recipe = RecipesRepositoryStub.getRecipesByRecipeId(recipeId).toUiModel()
@@ -66,6 +68,7 @@ fun RecipeDetailsScreen(
         }
     }
     val context = LocalContext.current
+    var isFavorite by rememberSaveable { mutableStateOf(favoritePrefs.isFavorite(recipeId)) }
 
     LazyColumn {
         item {
@@ -74,7 +77,14 @@ fun RecipeDetailsScreen(
                 context = context,
                 modifier = Modifier,
                 isFavorite = isFavorite,
-                onFavoriteToggle = onFavoriteToggle
+                onFavoriteToggle = {
+                    if (isFavorite) {
+                        favoritePrefs.removeFromFavorites(recipeId)
+                    } else {
+                        favoritePrefs.addToFavorites(recipeId)
+                    }
+                    isFavorite = favoritePrefs.isFavorite(recipeId)
+                }
             )
         }
         item {
@@ -284,5 +294,7 @@ fun InstructionItem(method: String, modifier: Modifier = Modifier) {
 )
 @Composable
 fun RecipeDetailsScreenPreview() {
-    RecipeComposeAppTheme { RecipeDetailsScreen(recipeId = 0, false) {} }
+    val context = LocalContext.current
+    val favoritePrefsManager = FavoritePrefsManager(context = context)
+    RecipeComposeAppTheme { RecipeDetailsScreen(recipeId = 0, favoritePrefsManager) }
 }
