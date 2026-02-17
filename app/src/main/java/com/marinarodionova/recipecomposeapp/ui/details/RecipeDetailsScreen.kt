@@ -16,10 +16,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,8 +37,9 @@ import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.ui.recipes.model.IngredientUiModel
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
+import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
 import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
-import com.marinarodionova.recipecomposeapp.utils.FavoritePrefsManager
+import kotlinx.coroutines.launch
 
 private const val MIN_PORTIONS = 1
 private const val MAX_PORTIONS = 10
@@ -47,11 +50,11 @@ private const val PINCH_TEXT = "щепотка"
 @Composable
 fun RecipeDetailsScreen(
     recipeId: Int,
-    favoritePrefs: FavoritePrefsManager
+    favoritePrefs: FavoriteDataStoreManager
 ) {
     val portions = DEFAULT_PORTIONS
     val recipe = RecipesRepositoryStub.getRecipesByRecipeId(recipeId).toUiModel()
-
+    val coroutineScope = rememberCoroutineScope()
     var currentPortions by rememberSaveable { mutableIntStateOf(portions) }
 
     val scaledIngredients = remember(recipe.ingredients, currentPortions) {
@@ -68,7 +71,10 @@ fun RecipeDetailsScreen(
         }
     }
     val context = LocalContext.current
-    var isFavorite by rememberSaveable { mutableStateOf(favoritePrefs.isFavorite(recipeId)) }
+    var isFavorite by remember { mutableStateOf(false) }
+    LaunchedEffect(recipe.id) {
+        isFavorite = favoritePrefs.isFavorite(recipe.id)
+    }
 
     LazyColumn {
         item {
@@ -78,12 +84,14 @@ fun RecipeDetailsScreen(
                 modifier = Modifier,
                 isFavorite = isFavorite,
                 onFavoriteToggle = {
-                    if (isFavorite) {
-                        favoritePrefs.removeFromFavorites(recipeId)
-                    } else {
-                        favoritePrefs.addToFavorites(recipeId)
+                    coroutineScope.launch {
+                        if (isFavorite) {
+                            favoritePrefs.removeFavorite(recipeId)
+                        } else {
+                            favoritePrefs.addFavorite(recipeId)
+                        }
+                        isFavorite = favoritePrefs.isFavorite(recipeId)
                     }
-                    isFavorite = favoritePrefs.isFavorite(recipeId)
                 }
             )
         }
@@ -295,6 +303,6 @@ fun InstructionItem(method: String, modifier: Modifier = Modifier) {
 @Composable
 fun RecipeDetailsScreenPreview() {
     val context = LocalContext.current
-    val favoritePrefsManager = FavoritePrefsManager(context = context)
-    RecipeComposeAppTheme { RecipeDetailsScreen(recipeId = 0, favoritePrefsManager) }
+    val favoritePrefs = FavoriteDataStoreManager(context = context)
+    RecipeComposeAppTheme { RecipeDetailsScreen(recipeId = 0, favoritePrefs) }
 }
