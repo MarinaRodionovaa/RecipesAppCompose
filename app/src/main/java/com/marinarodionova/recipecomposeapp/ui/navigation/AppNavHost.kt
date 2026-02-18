@@ -3,6 +3,7 @@ package com.marinarodionova.recipecomposeapp.ui.navigation
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -10,11 +11,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.marinarodionova.recipecomposeapp.Constants
+import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
 import com.marinarodionova.recipecomposeapp.ui.categories.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.ui.favorites.FavoritesScreen
 import com.marinarodionova.recipecomposeapp.ui.recipes.RecipesScreen
-import com.marinarodionova.recipecomposeapp.utils.FavoritePrefsManager
 import kotlinx.coroutines.delay
 
 @Composable
@@ -23,7 +24,7 @@ fun AppNavHost(
     deepLinkIntent: Intent?
 ) {
     val context = LocalContext.current
-    val favoritePrefsManager = FavoritePrefsManager(context)
+    val favoritePrefsManager = remember { FavoriteDataStoreManager(context) }
     LaunchedEffect(deepLinkIntent) {
         deepLinkIntent?.data?.let { uri ->
             val recipeId: Int? = when (uri.scheme) {

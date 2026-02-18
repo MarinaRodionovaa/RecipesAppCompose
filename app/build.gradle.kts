@@ -63,4 +63,5 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(platform(libs.androidx.compose.bom.v2024xxxx))
     implementation(libs.material.icons.extended)
+    implementation(libs.androidx.datastore.preferences)
 }

@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.core.content.edit
 
 class FavoritePrefsManager(context: Context) {
-    val sharedPreferences = context.getSharedPreferences("recipe_app_prefs", Context.MODE_PRIVATE)
+    private val sharedPreferences = context.getSharedPreferences("recipe_app_prefs", Context.MODE_PRIVATE)
 
     fun isFavorite(recipeId: Int): Boolean {
         val favoriteRecipeIds = sharedPreferences
-            .getStringSet("favorite_recipe_ids", emptySet())!!
+            .getStringSet("favorite_recipe_ids", emptySet())?:emptySet()
         return recipeId.toString() in favoriteRecipeIds
     }
 
@@ -31,6 +31,6 @@ class FavoritePrefsManager(context: Context) {
     }
 
     fun getAllFavorites(): Set<String> {
-        return sharedPreferences.getStringSet("favorite_recipe_ids", emptySet())!!
+        return sharedPreferences.getStringSet("favorite_recipe_ids", emptySet())?:emptySet()
     }
 }
