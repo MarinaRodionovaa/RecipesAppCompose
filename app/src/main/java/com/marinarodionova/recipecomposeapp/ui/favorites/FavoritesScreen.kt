@@ -7,8 +7,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -22,26 +22,30 @@ import com.marinarodionova.recipecomposeapp.ui.recipes.components.RecipeItem
 import com.marinarodionova.recipecomposeapp.ui.recipes.model.toUiModel
 import com.marinarodionova.recipecomposeapp.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import kotlinx.coroutines.flow.map
 
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier, favoritePref: FavoriteDataStoreManager,
-    onRecipeClick: (Int) -> Unit,
+    onRecipeClick: (Int) -> Unit, recipesRepository: RecipesRepositoryStub
 ) {
-    val favoriteIds by produceState<Set<String>>(initialValue = emptySet(), favoritePref) {
-        value = favoritePref.getAllFavorites()
-    }
+    val recipes by favoritePref.getFavoriteIdsFlow()
+        .map { ids ->
+            ids.mapNotNull { idStr ->
+                val id = idStr.toIntOrNull() ?: return@mapNotNull null
+                recipesRepository.getRecipesByRecipeId(id)
+            }.map { it.toUiModel() }
+        }
+        .collectAsState(initial = emptyList())
+
     Column(modifier = modifier) {
         ScreenHeader(
             stringResource(R.string.title_favorite),
             imageResId = R.drawable.bcg_favorites
         )
-        if (favoriteIds.isEmpty()) {
+        if (recipes.isEmpty()) {
             EmptyPlaceholder(text = stringResource(R.string.information_message_favorite_list))
         } else {
-            val recipes = favoriteIds.map { it.toInt() }
-                .map { id -> RecipesRepositoryStub.getRecipesByRecipeId(id) }
-                .map { it.toUiModel() }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.standardMargin),
@@ -66,6 +70,10 @@ fun FavoritesScreenPreview() {
     RecipeComposeAppTheme {
         val context = LocalContext.current
         val favoritePrefs = FavoriteDataStoreManager(context = context)
-        FavoritesScreen(favoritePref = favoritePrefs, onRecipeClick = {})
+        FavoritesScreen(
+            favoritePref = favoritePrefs,
+            onRecipeClick = {},
+            recipesRepository = RecipesRepositoryStub
+        )
     }
 }

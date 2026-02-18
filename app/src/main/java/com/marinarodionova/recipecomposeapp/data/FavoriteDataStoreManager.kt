@@ -2,20 +2,27 @@ package com.marinarodionova.recipecomposeapp.data
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class FavoriteDataStoreManager(context: Context) {
     private val preferences = context.dataStore
 
-    suspend fun getAllFavorites(): Set<String> {
-        val preferences = preferences.data.first()
-        return preferences[PreferencesKeys.FAVORITE_RECIPE_IDS] ?: emptySet()
+    fun getFavoriteIdsFlow(): Flow<Set<String>> {
+        return preferences.data
+            .map { prefs -> prefs[PreferencesKeys.FAVORITE_RECIPE_IDS] ?: emptySet() }
+            .distinctUntilChanged()
     }
 
-    suspend fun isFavorite(recipeId: Int): Boolean {
-        val favoriteIds =
-            preferences.data.first()[PreferencesKeys.FAVORITE_RECIPE_IDS] ?: emptySet()
-        return favoriteIds.contains(recipeId.toString())
+    fun isFavoriteFlow(recipeId: Int): Flow<Boolean> {
+        return getFavoriteIdsFlow().map { favoriteIds ->
+            favoriteIds.contains(recipeId.toString())
+        }
+    }
+
+    fun getFavoriteCountFlow(): Flow<Int> {
+        return getFavoriteIdsFlow().map { it.size }
     }
 
     suspend fun addFavorite(recipeId: Int) {

@@ -14,7 +14,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
         listOf(
             SharedPreferencesMigration(
                 context = context,
-                sharedPreferencesName = "FavoriteRecipes"
+                sharedPreferencesName = "recipe_app_prefs"
             )
         )
     }
