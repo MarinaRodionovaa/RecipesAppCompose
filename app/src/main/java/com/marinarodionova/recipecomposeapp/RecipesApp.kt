@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,7 +22,7 @@ import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
 fun RecipesApp(deepLinkIntent: Intent?) {
     val navController = rememberNavController()
     val context = LocalContext.current
-    val favoritePrefs = FavoriteDataStoreManager(context = context)
+    val favoritePrefs = remember { FavoriteDataStoreManager(context) }
 
     RecipeComposeAppTheme {
         Scaffold(

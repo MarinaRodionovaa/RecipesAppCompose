@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -29,14 +30,19 @@ fun FavoritesScreen(
     modifier: Modifier = Modifier, favoritePref: FavoriteDataStoreManager,
     onRecipeClick: (Int) -> Unit, recipesRepository: RecipesRepositoryStub
 ) {
-    val recipes by favoritePref.getFavoriteIdsFlow()
-        .map { ids ->
-            ids.mapNotNull { idStr ->
-                val id = idStr.toIntOrNull() ?: return@mapNotNull null
-                recipesRepository.getRecipesByRecipeId(id)
-            }.map { it.toUiModel() }
-        }
-        .collectAsState(initial = emptyList())
+    val recipesFlow = remember {
+        favoritePref.getFavoriteIdsFlow()
+            .map { ids ->
+                ids
+                    .mapNotNull { idStr ->
+                        val id = idStr.toIntOrNull() ?: return@mapNotNull null
+                        recipesRepository.getRecipesByRecipeId(id)
+                    }
+                    .map { it.toUiModel() }
+            }
+    }
+
+    val recipes by recipesFlow.collectAsState(initial = emptyList())
 
     Column(modifier = modifier) {
         ScreenHeader(
