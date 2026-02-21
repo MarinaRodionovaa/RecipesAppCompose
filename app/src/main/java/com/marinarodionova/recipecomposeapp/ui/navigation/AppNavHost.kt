@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.marinarodionova.recipecomposeapp.Constants
 import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
+import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.marinarodionova.recipecomposeapp.ui.categories.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.ui.details.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.ui.favorites.FavoritesScreen
@@ -62,7 +63,8 @@ fun AppNavHost(
                 navHostController.navigate(
                     Destination.RecipeDetails.createRoute(recipeId)
                 )
-            })
+            },
+                recipesRepository = RecipesRepositoryStub)
         }
 
         composable(

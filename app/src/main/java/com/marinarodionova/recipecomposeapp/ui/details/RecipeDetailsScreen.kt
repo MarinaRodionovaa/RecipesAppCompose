@@ -16,10 +16,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -71,10 +70,7 @@ fun RecipeDetailsScreen(
         }
     }
     val context = LocalContext.current
-    var isFavorite by remember { mutableStateOf(false) }
-    LaunchedEffect(recipe.id) {
-        isFavorite = favoritePrefs.isFavorite(recipe.id)
-    }
+    val isFavorite by favoritePrefs.isFavoriteFlow(recipe.id).collectAsState(initial = false)
 
     LazyColumn {
         item {
@@ -90,7 +86,6 @@ fun RecipeDetailsScreen(
                         } else {
                             favoritePrefs.addFavorite(recipeId)
                         }
-                        isFavorite = favoritePrefs.isFavorite(recipeId)
                     }
                 }
             )
