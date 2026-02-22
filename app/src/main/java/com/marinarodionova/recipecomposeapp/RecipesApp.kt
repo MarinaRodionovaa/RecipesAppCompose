@@ -13,10 +13,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
-import com.marinarodionova.recipecomposeapp.ui.navigation.BottomNavigation
-import com.marinarodionova.recipecomposeapp.ui.navigation.AppNavHost
-import com.marinarodionova.recipecomposeapp.ui.navigation.Destination
-import com.marinarodionova.recipecomposeapp.ui.theme.RecipeComposeAppTheme
+import com.marinarodionova.recipecomposeapp.core.navigation.BottomNavigation
+import com.marinarodionova.recipecomposeapp.core.navigation.AppNavHost
+import com.marinarodionova.recipecomposeapp.core.navigation.Destination
+import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
 
 @Composable
 fun RecipesApp(deepLinkIntent: Intent?) {
