@@ -32,7 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.marinarodionova.recipecomposeapp.R
-import com.marinarodionova.recipecomposeapp.features.details.presentation.IngredientUiModel
+import com.marinarodionova.recipecomposeapp.features.details.presentation.model.IngredientUiModel
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
 import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager

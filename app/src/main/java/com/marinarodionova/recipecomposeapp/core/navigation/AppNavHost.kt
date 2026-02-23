@@ -52,27 +52,40 @@ fun AppNavHost(
     ) {
         composable(route = Destination.Categories.route) {
             CategoriesScreen(
-                onCategoryClick = { categoryId ->
-                    navHostController.navigate(Destination.Recipes.createRoute(categoryId))
+                onCategoryClick = { categoryId, title, imageUrl ->
+                    navHostController.navigate(
+                        Destination.Recipes.createRoute(
+                            categoryId = categoryId,
+                            title = title,
+                            imageUrl = imageUrl
+                        )
+                    )
                 }
             )
         }
 
         composable(route = Destination.Favorites.route) {
-            FavoritesScreen(favoritePref = favoritePrefsManager, onRecipeClick = { recipeId ->
-                navHostController.navigate(
-                    Destination.RecipeDetails.createRoute(recipeId)
-                )
-            },
-                recipesRepository = RecipesRepositoryStub)
+            FavoritesScreen(
+                favoritePref = favoritePrefsManager, onRecipeClick = { recipeId ->
+                    navHostController.navigate(
+                        Destination.RecipeDetails.createRoute(recipeId)
+                    )
+                },
+                recipesRepository = RecipesRepositoryStub
+            )
         }
 
         composable(
             route = Destination.Recipes.route,
-            arguments = listOf(navArgument("categoryId") { type = NavType.IntType })
+            arguments = listOf(
+                navArgument("categoryId") { type = NavType.IntType },
+                navArgument("title") { type = NavType.StringType },
+                navArgument("imageUrl") { type = NavType.StringType })
         ) { backStackEntry ->
 
             val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
+            val title = backStackEntry.arguments?.getString("title") ?: "title"
+            val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: "imageUrl"
 
             RecipesScreen(
                 categoryId = categoryId,
@@ -80,7 +93,9 @@ fun AppNavHost(
                     navHostController.navigate(
                         Destination.RecipeDetails.createRoute(recipeId)
                     )
-                }
+                },
+                categoryTitle = title,
+                categoryImageUrl = imageUrl
             )
         }
 
