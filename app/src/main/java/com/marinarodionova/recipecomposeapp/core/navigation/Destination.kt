@@ -1,10 +1,14 @@
 package com.marinarodionova.recipecomposeapp.core.navigation
 
+import android.net.Uri
+
 sealed class Destination(val route: String) {
     data object Categories : Destination(ROUTE_CATEGORIES)
     data object Favorites : Destination(ROUTE_FAVORITES)
-    data object Recipes : Destination("$ROUTE_RECIPES/{categoryId}") {
-        fun createRoute(categoryId: Int) = "$ROUTE_RECIPES/$categoryId"
+    data object Recipes :
+        Destination("$ROUTE_RECIPES/{categoryId}?title={title}&imageUrl={imageUrl}") {
+        fun createRoute(categoryId: Int, title: String, imageUrl: String) =
+            "$ROUTE_RECIPES/$categoryId?title=${Uri.encode(title)}&imageUrl=${Uri.encode(imageUrl)}"
     }
 
     data object RecipeDetails : Destination("$ROUTE_RECIPE_DETAILS/{recipeId}") {

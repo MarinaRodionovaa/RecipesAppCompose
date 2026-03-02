@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.marinarodionova.recipecomposeapp.core.utils.Constants
 import com.marinarodionova.recipecomposeapp.data.model.RecipeDto
-import com.marinarodionova.recipecomposeapp.features.details.presentation.IngredientUiModel
-import com.marinarodionova.recipecomposeapp.features.details.presentation.toUiModel
+import com.marinarodionova.recipecomposeapp.features.details.presentation.model.IngredientUiModel
+import com.marinarodionova.recipecomposeapp.features.details.presentation.model.toUiModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.parcelize.Parcelize

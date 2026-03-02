@@ -12,4 +12,5 @@
     <string name="information_message_favorite_list">Вы еще не добавили ни одного\n рецепта в избранное</string>
     <string name="information_message_category_list">Скоро тут будут категории</string>
     <string name="information_message_recipe_list">Скоро тут будут рецепты</string>
+    <string name="information_message_categories_error">Категории не найдены</string>
 </resources>

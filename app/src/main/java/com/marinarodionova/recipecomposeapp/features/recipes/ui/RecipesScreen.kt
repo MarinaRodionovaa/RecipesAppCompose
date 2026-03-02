@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub.getRecipesByCategoryId
 import com.marinarodionova.recipecomposeapp.core.ui.ScreenHeader
 import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
@@ -22,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import com.marinarodionova.recipecomposeapp.R
-import com.marinarodionova.recipecomposeapp.features.categories.presentation.model.toUiModel
 import com.marinarodionova.recipecomposeapp.core.ui.EmptyPlaceholder
 import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.toUiModel
 
@@ -30,19 +28,20 @@ import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.
 fun RecipesScreen(
     modifier: Modifier = Modifier,
     categoryId: Int,
+    categoryTitle: String,
+    categoryImageUrl: String,
     onRecipeClick: (Int) -> Unit,
 ) {
     var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
-    val category = RecipesRepositoryStub.getCategoryByCategoryId(categoryId).toUiModel()
 
-    LaunchedEffect(category) {
-        recipes = getRecipesByCategoryId(category.id).map { dto -> dto.toUiModel() }
+    LaunchedEffect(categoryId) {
+        recipes = getRecipesByCategoryId(categoryId).map { dto -> dto.toUiModel() }
     }
 
     Column(modifier = modifier) {
         ScreenHeader(
-            title = category.title,
-            imageUrl = category.imageUrl
+            title = categoryTitle,
+            imageUrl = categoryImageUrl
         )
         if (recipes.isEmpty()) {
             EmptyPlaceholder(text = stringResource(R.string.information_message_recipe_list))
@@ -73,6 +72,11 @@ fun RecipesScreen(
 @Composable
 fun CategoriesScreenPreview() {
     RecipeComposeAppTheme {
-        RecipesScreen(categoryId = 0, onRecipeClick = { _ -> })
+        RecipesScreen(
+            categoryId = 0,
+            onRecipeClick = { _ -> },
+            categoryImageUrl = "",
+            categoryTitle = ""
+        )
     }
 }
