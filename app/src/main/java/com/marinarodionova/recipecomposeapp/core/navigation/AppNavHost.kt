@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -16,6 +17,7 @@ import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStu
 import com.marinarodionova.recipecomposeapp.features.categories.ui.CategoriesScreen
 import com.marinarodionova.recipecomposeapp.features.details.ui.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.features.favorites.ui.FavoritesScreen
+import com.marinarodionova.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 import com.marinarodionova.recipecomposeapp.features.recipes.ui.RecipesScreen
 import kotlinx.coroutines.delay
 
@@ -82,20 +84,14 @@ fun AppNavHost(
                 navArgument("title") { type = NavType.StringType },
                 navArgument("imageUrl") { type = NavType.StringType })
         ) { backStackEntry ->
-
-            val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
-            val title = backStackEntry.arguments?.getString("title") ?: "title"
-            val imageUrl = backStackEntry.arguments?.getString("imageUrl") ?: "imageUrl"
-
+            val viewModel: RecipesViewModel = viewModel(backStackEntry)
             RecipesScreen(
-                categoryId = categoryId,
+                viewModel = viewModel,
                 onRecipeClick = { recipeId ->
                     navHostController.navigate(
                         Destination.RecipeDetails.createRoute(recipeId)
                     )
                 },
-                categoryTitle = title,
-                categoryImageUrl = imageUrl
             )
         }
 
