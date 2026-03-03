@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.URLDecoder
 
 class RecipesViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     private val _uiState = MutableStateFlow(RecipesUiState())
@@ -19,17 +20,17 @@ class RecipesViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     private val categoryTitle: String =
         savedStateHandle.get<String>("categoryTitle")
-            ?: savedStateHandle.get<String>("title")
             ?: ""
 
     private val categoryImageUrl: String =
-        savedStateHandle.get<String>("categoryImageUrl")
-            ?: savedStateHandle.get<String>("imageUrl")
-            ?: ""
+        URLDecoder.decode(
+            savedStateHandle.get<String>("categoryImageUrl")
+                ?: "",
+            "UTF-8"
+        )
 
     private val categoryId: Int =
         savedStateHandle.get<Int>("categoryId")
-            ?: savedStateHandle.get<Int>("categoryId")
             ?: -1
 
     init {
@@ -41,7 +42,6 @@ class RecipesViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         }
 
         loadRecipes(categoryId)
-        Log.d("!!!!", "Инициализация RecipesViewModel и обновление")
     }
 
     private fun loadRecipes(categoryId: Int) {

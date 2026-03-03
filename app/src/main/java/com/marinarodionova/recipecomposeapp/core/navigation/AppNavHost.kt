@@ -81,8 +81,8 @@ fun AppNavHost(
             route = Destination.Recipes.route,
             arguments = listOf(
                 navArgument("categoryId") { type = NavType.IntType },
-                navArgument("title") { type = NavType.StringType },
-                navArgument("imageUrl") { type = NavType.StringType })
+                navArgument("categoryTitle") { type = NavType.StringType },
+                navArgument("categoryImageUrl") { type = NavType.StringType })
         ) { backStackEntry ->
             val viewModel: RecipesViewModel = viewModel(backStackEntry)
             RecipesScreen(
