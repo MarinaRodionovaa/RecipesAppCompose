@@ -1,6 +1,5 @@
 package com.marinarodionova.recipecomposeapp.features.recipes.presentation
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -55,7 +54,12 @@ class RecipesViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                 }
 
             } catch (e: Exception) {
-                Log.d("!!!!", "Ошибка загрузки данных! ${e.message}")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        error = "Ошибка загрузки данных!"
+                    )
+                }
+
             }
         }
     }

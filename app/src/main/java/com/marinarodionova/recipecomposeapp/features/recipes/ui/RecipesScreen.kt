@@ -33,8 +33,11 @@ fun RecipesScreen(
             title = state.categoryTitle,
             imageUrl = state.categoryImageUrl
         )
+
         if (state.recipesList.isEmpty()) {
-            EmptyPlaceholder(text = stringResource(R.string.information_message_recipe_list))
+            EmptyPlaceholder(
+                text = state.error.ifEmpty { stringResource(R.string.information_message_recipe_list) }
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),

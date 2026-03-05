@@ -13,7 +13,7 @@ sealed class Destination(val route: String) {
         fun createRoute(categoryId: Int, title: String, imageUrl: String) =
             "$ROUTE_RECIPES/$categoryId" +
                     "?categoryTitle=${Uri.encode(title)}" +
-                    "&categoryImageUrl=${URLEncoder.encode(imageUrl)}"
+                    "&categoryImageUrl=${URLEncoder.encode(imageUrl, "UTF-8")}"
     }
 
     data object RecipeDetails : Destination("$ROUTE_RECIPE_DETAILS/{recipeId}") {
