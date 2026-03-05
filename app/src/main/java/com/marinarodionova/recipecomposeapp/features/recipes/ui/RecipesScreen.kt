@@ -7,44 +7,37 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub.getRecipesByCategoryId
 import com.marinarodionova.recipecomposeapp.core.ui.ScreenHeader
-import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.core.ui.EmptyPlaceholder
-import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.toUiModel
+import com.marinarodionova.recipecomposeapp.features.recipes.presentation.RecipesViewModel
 
 @Composable
 fun RecipesScreen(
     modifier: Modifier = Modifier,
-    categoryId: Int,
-    categoryTitle: String,
-    categoryImageUrl: String,
     onRecipeClick: (Int) -> Unit,
+    viewModel: RecipesViewModel = viewModel()
 ) {
-    var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
-
-    LaunchedEffect(categoryId) {
-        recipes = getRecipesByCategoryId(categoryId).map { dto -> dto.toUiModel() }
-    }
+    val state by viewModel.uiState.collectAsState()
 
     Column(modifier = modifier) {
         ScreenHeader(
-            title = categoryTitle,
-            imageUrl = categoryImageUrl
+            title = state.categoryTitle,
+            imageUrl = state.categoryImageUrl
         )
-        if (recipes.isEmpty()) {
-            EmptyPlaceholder(text = stringResource(R.string.information_message_recipe_list))
+
+        if (state.recipesList.isEmpty()) {
+            EmptyPlaceholder(
+                text = state.error.ifEmpty { stringResource(R.string.information_message_recipe_list) }
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
@@ -52,7 +45,7 @@ fun RecipesScreen(
                 verticalArrangement = Arrangement.spacedBy(Dimens.standardMargin),
                 contentPadding = PaddingValues(Dimens.standardMargin),
             ) {
-                items(recipes, key = { it.id }) { recipe ->
+                items(state.recipesList, key = { it.id }) { recipe ->
                     RecipeItem(
                         imageUrl = recipe.imageUrl,
                         title = recipe.title,
@@ -64,7 +57,6 @@ fun RecipesScreen(
     }
 }
 
-
 @Preview(
     name = "LightTheme",
     showBackground = true
@@ -73,10 +65,7 @@ fun RecipesScreen(
 fun CategoriesScreenPreview() {
     RecipeComposeAppTheme {
         RecipesScreen(
-            categoryId = 0,
             onRecipeClick = { _ -> },
-            categoryImageUrl = "",
-            categoryTitle = ""
         )
     }
 }

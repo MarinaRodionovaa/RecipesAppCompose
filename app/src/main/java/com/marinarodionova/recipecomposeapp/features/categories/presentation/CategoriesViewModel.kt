@@ -17,7 +17,6 @@ class CategoriesViewModel() : ViewModel() {
     val uiState: StateFlow<CategoriesUiState> = _uiState.asStateFlow()
 
     init {
-        Log.d("!!!!", "Инициализация CategoriesViewModel и обновление")
         loadCategories()
     }
 
