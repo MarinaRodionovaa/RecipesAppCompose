@@ -19,13 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,71 +32,57 @@ import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.features.details.presentation.model.IngredientUiModel
 import kotlin.math.roundToInt
 import androidx.compose.ui.platform.LocalContext
-import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.marinarodionova.recipecomposeapp.core.ui.EmptyPlaceholder
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
-import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.toUiModel
-import kotlinx.coroutines.launch
+import com.marinarodionova.recipecomposeapp.features.details.presentation.RecipeDetailsViewModel
 
 private const val MIN_PORTIONS = 1
 private const val MAX_PORTIONS = 10
 private const val STEPS = 10
 private const val DEFAULT_PORTIONS = 1
-private const val PINCH_TEXT = "щепотка"
+const val PINCH_TEXT = "щепотка"
 
 @Composable
 fun RecipeDetailsScreen(
-    recipeId: Int,
-    favoritePrefs: FavoriteDataStoreManager
+    viewModel: RecipeDetailsViewModel = viewModel()
 ) {
+    val state by viewModel.uiState.collectAsState()
     val portions = DEFAULT_PORTIONS
-    val recipe = RecipesRepositoryStub.getRecipesByRecipeId(recipeId).toUiModel()
-    val coroutineScope = rememberCoroutineScope()
     var currentPortions by rememberSaveable { mutableIntStateOf(portions) }
-
-    val scaledIngredients = remember(recipe.ingredients, currentPortions) {
-        recipe.ingredients.map { ingredient ->
-            val value = ingredient.quantity.toDoubleOrNull()
-
-            if (value == null) {
-                ingredient
-            } else {
-                ingredient.copy(
-                    quantity = (value * currentPortions).toString()
-                )
-            }
-        }
-    }
+    val scaledIngredients = state.recalculatedIngredients
     val context = LocalContext.current
-    val isFavorite by favoritePrefs.isFavoriteFlow(recipe.id).collectAsState(initial = false)
 
     LazyColumn {
         item {
             RecipeHeader(
-                recipe = recipe,
+                recipeImageUrl = state.imageUrl,
+                recipeId = state.recipeId,
+                recipeTitle = state.recipeName,
                 context = context,
                 modifier = Modifier,
-                isFavorite = isFavorite,
+                isFavorite = state.isFavorite,
                 onFavoriteToggle = {
-                    coroutineScope.launch {
-                        if (isFavorite) {
-                            favoritePrefs.removeFavorite(recipeId)
-                        } else {
-                            favoritePrefs.addFavorite(recipeId)
-                        }
+                    viewModel.toggleFavorite()
+                }
+            )
+        }
+        if (state.recipeId == -1) {
+            item { EmptyPlaceholder(text = state.error) }
+        } else {
+            item {
+                PortionsSlider(
+                    currentPortions = currentPortions,
+                    onPortionsChange = { newValue ->
+                        viewModel.updatePortionCount(newValue)
+                        currentPortions = newValue
                     }
-                }
-            )
+                )
+            }
+            item { IngredientsList(scaledIngredients) }
+            item { InstructionsList(state.method) }
         }
-        item {
-            PortionsSlider(
-                currentPortions = currentPortions,
-                onPortionsChange = { newValue ->
-                    currentPortions = newValue
-                }
-            )
-        }
-        item { IngredientsList(scaledIngredients) }
-        item { InstructionsList(recipe.method) }
+
     }
 }
 
@@ -150,7 +133,7 @@ fun IngredientItem(
             modifier = Modifier.weight(1f)
         )
 
-        val quantityText = formatSmartAmount(ingredient.quantity)
+        val quantityText = ingredient.quantity
         val unitText = ingredient.unitOfMeasure
 
         Text(
@@ -243,34 +226,6 @@ fun InstructionsList(method: List<String>) {
     }
 }
 
-fun formatSmartAmount(raw: String): String {
-    val value = raw.toFloatOrNull() ?: return raw
-
-    val whole = value.toInt()
-    val fraction = value - whole
-
-    val fractionText = when {
-        fraction >= 0.75f -> "3/4"
-        fraction >= 0.5f -> "1/2"
-        fraction >= 0.25f -> "1/4"
-        else -> ""
-    }
-
-    return when {
-        whole == 0 && fraction < 0.25f ->
-            PINCH_TEXT
-
-        whole > 0 && fractionText.isNotEmpty() ->
-            "$whole $fractionText"
-
-        whole > 0 ->
-            whole.toString()
-
-        else ->
-            fractionText
-    }
-}
-
 @Composable
 fun InstructionItem(method: String, modifier: Modifier = Modifier) {
 
@@ -297,7 +252,5 @@ fun InstructionItem(method: String, modifier: Modifier = Modifier) {
 )
 @Composable
 fun RecipeDetailsScreenPreview() {
-    val context = LocalContext.current
-    val favoritePrefs = FavoriteDataStoreManager(context = context)
-    RecipeComposeAppTheme { RecipeDetailsScreen(recipeId = 0, favoritePrefs) }
+    RecipeComposeAppTheme { RecipeDetailsScreen() }
 }

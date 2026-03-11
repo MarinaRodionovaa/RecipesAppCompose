@@ -20,26 +20,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.marinarodionova.recipecomposeapp.R
-import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens.radiusSmall
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens.standardPadding
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens.ttlPadding
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
+import com.marinarodionova.recipecomposeapp.features.favorites.model.FavoritesViewModel
 
 @Composable
 fun BottomNavigation(
     onCategoriesClick: () -> Unit,
     onFavoriteClick: () -> Unit,
-    favoritePrefs: FavoriteDataStoreManager
+    viewModel: FavoritesViewModel = viewModel()
 ) {
-    val favoriteCount by favoritePrefs.getFavoriteCountFlow().collectAsState(initial = 0)
+    val state by viewModel.uiState.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,9 +76,9 @@ fun BottomNavigation(
             )
             BadgedBox(
                 badge = {
-                    if (favoriteCount > 0) {
+                    if (state.recipesList.isNotEmpty()) {
                         Badge {
-                            Text(favoriteCount.toString())
+                            Text(state.recipesList.size.toString())
                         }
                     }
                 }
@@ -100,13 +100,10 @@ fun BottomNavigation(
 )
 @Composable
 fun BottomNavigationLightPreview() {
-    val context = LocalContext.current
-    val favoritePrefs = FavoriteDataStoreManager(context = context)
     RecipeComposeAppTheme {
         BottomNavigation(
             onCategoriesClick = {},
             onFavoriteClick = {},
-            favoritePrefs
         )
     }
 }
@@ -118,13 +115,10 @@ fun BottomNavigationLightPreview() {
 )
 @Composable
 fun BottomNavigationDarkPreview() {
-    val context = LocalContext.current
-    val favoritePrefs = FavoriteDataStoreManager(context = context)
     RecipeComposeAppTheme {
         BottomNavigation(
             onCategoriesClick = {},
             onFavoriteClick = {},
-            favoritePrefs
         )
     }
 }
