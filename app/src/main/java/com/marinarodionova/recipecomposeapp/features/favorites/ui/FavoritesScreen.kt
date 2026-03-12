@@ -9,48 +9,34 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.marinarodionova.recipecomposeapp.R
-import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
-import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.marinarodionova.recipecomposeapp.core.ui.EmptyPlaceholder
 import com.marinarodionova.recipecomposeapp.core.ui.ScreenHeader
 import com.marinarodionova.recipecomposeapp.features.recipes.ui.RecipeItem
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
-import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.toUiModel
-import kotlinx.coroutines.flow.map
+import com.marinarodionova.recipecomposeapp.features.favorites.model.FavoritesViewModel
 
 @Composable
 fun FavoritesScreen(
-    modifier: Modifier = Modifier, favoritePref: FavoriteDataStoreManager,
-    onRecipeClick: (Int) -> Unit, recipesRepository: RecipesRepositoryStub
+    modifier: Modifier = Modifier,
+    onRecipeClick: (Int) -> Unit,
+    viewModel: FavoritesViewModel = viewModel()
 ) {
-    val recipesFlow = remember {
-        favoritePref.getFavoriteIdsFlow()
-            .map { ids ->
-                ids
-                    .mapNotNull { idStr ->
-                        val id = idStr.toIntOrNull() ?: return@mapNotNull null
-                        recipesRepository.getRecipesByRecipeId(id)
-                    }
-                    .map { it.toUiModel() }
-            }
-    }
-
-    val recipes by recipesFlow.collectAsState(initial = emptyList())
-
+    val state by viewModel.uiState.collectAsState()
     Column(modifier = modifier) {
         ScreenHeader(
             stringResource(R.string.title_favorite),
             imageResId = R.drawable.bcg_favorites
         )
-        if (recipes.isEmpty()) {
+        if (state.recipesList.isEmpty() and state.error.isEmpty()) {
             EmptyPlaceholder(text = stringResource(R.string.information_message_favorite_list))
+        } else if (state.recipesList.isEmpty() and state.error.isNotEmpty()) {
+            EmptyPlaceholder(text = state.error)
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(1),
@@ -58,7 +44,7 @@ fun FavoritesScreen(
                 verticalArrangement = Arrangement.spacedBy(Dimens.standardMargin),
                 contentPadding = PaddingValues(Dimens.standardMargin),
             ) {
-                items(recipes, key = { it.id }) { recipe ->
+                items(state.recipesList, key = { it.id }) { recipe ->
                     RecipeItem(
                         imageUrl = recipe.imageUrl,
                         title = recipe.title,
@@ -74,12 +60,8 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenPreview() {
     RecipeComposeAppTheme {
-        val context = LocalContext.current
-        val favoritePrefs = FavoriteDataStoreManager(context = context)
         FavoritesScreen(
-            favoritePref = favoritePrefs,
             onRecipeClick = {},
-            recipesRepository = RecipesRepositoryStub
         )
     }
 }

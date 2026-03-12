@@ -7,12 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
 import com.marinarodionova.recipecomposeapp.core.navigation.BottomNavigation
 import com.marinarodionova.recipecomposeapp.core.navigation.AppNavHost
 import com.marinarodionova.recipecomposeapp.core.navigation.Destination
@@ -21,8 +18,6 @@ import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
 @Composable
 fun RecipesApp(deepLinkIntent: Intent?) {
     val navController = rememberNavController()
-    val context = LocalContext.current
-    val favoritePrefs = remember { FavoriteDataStoreManager(context) }
 
     RecipeComposeAppTheme {
         Scaffold(
@@ -32,7 +27,6 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                 BottomNavigation(
                     onCategoriesClick = { navController.navigate(Destination.Categories.route) },
                     onFavoriteClick = { navController.navigate(Destination.Favorites.route) },
-                    favoritePrefs = favoritePrefs
                 )
             }
         ) { paddingValues ->

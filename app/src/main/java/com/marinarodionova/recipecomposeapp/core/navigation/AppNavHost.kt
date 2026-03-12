@@ -3,8 +3,6 @@ package com.marinarodionova.recipecomposeapp.core.navigation
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,9 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.marinarodionova.recipecomposeapp.core.utils.Constants
-import com.marinarodionova.recipecomposeapp.data.FavoriteDataStoreManager
-import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
 import com.marinarodionova.recipecomposeapp.features.categories.ui.CategoriesScreen
+import com.marinarodionova.recipecomposeapp.features.details.presentation.RecipeDetailsViewModel
 import com.marinarodionova.recipecomposeapp.features.details.ui.RecipeDetailsScreen
 import com.marinarodionova.recipecomposeapp.features.favorites.ui.FavoritesScreen
 import com.marinarodionova.recipecomposeapp.features.recipes.presentation.RecipesViewModel
@@ -26,8 +23,6 @@ fun AppNavHost(
     navHostController: NavHostController,
     deepLinkIntent: Intent?
 ) {
-    val context = LocalContext.current
-    val favoritePrefsManager = remember { FavoriteDataStoreManager(context) }
     LaunchedEffect(deepLinkIntent) {
         deepLinkIntent?.data?.let { uri ->
             val recipeId: Int? = when (uri.scheme) {
@@ -68,12 +63,11 @@ fun AppNavHost(
 
         composable(route = Destination.Favorites.route) {
             FavoritesScreen(
-                favoritePref = favoritePrefsManager, onRecipeClick = { recipeId ->
+                onRecipeClick = { recipeId ->
                     navHostController.navigate(
                         Destination.RecipeDetails.createRoute(recipeId)
                     )
                 },
-                recipesRepository = RecipesRepositoryStub
             )
         }
 
@@ -99,11 +93,8 @@ fun AppNavHost(
             route = Destination.RecipeDetails.route,
             arguments = listOf(navArgument(Constants.PARAM_RECIPE_ID) { type = NavType.IntType })
         ) { backStackEntry ->
-            val recipeId = backStackEntry.arguments?.getInt(Constants.PARAM_RECIPE_ID) ?: 0
-            RecipeDetailsScreen(
-                recipeId = recipeId,
-                favoritePrefsManager
-            )
+            val viewModel: RecipeDetailsViewModel = viewModel(backStackEntry)
+            RecipeDetailsScreen(viewModel = viewModel)
         }
     }
 }

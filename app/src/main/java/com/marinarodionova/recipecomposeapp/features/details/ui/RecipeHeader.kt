@@ -27,21 +27,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.marinarodionova.recipecomposeapp.R
 import com.marinarodionova.recipecomposeapp.core.utils.ShareUtils
-import com.marinarodionova.recipecomposeapp.data.repository.RecipesRepositoryStub
-import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.RecipeUiModel
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
-import com.marinarodionova.recipecomposeapp.features.recipes.presentation.model.toUiModel
 
 @Composable
 fun RecipeHeader(
-    recipe: RecipeUiModel,
+    recipeImageUrl: String,
+    recipeId: Int,
+    recipeTitle: String,
     context: Context,
     modifier: Modifier = Modifier,
     isFavorite: Boolean,
@@ -54,15 +54,16 @@ fun RecipeHeader(
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
-            model = remember(recipe.imageUrl) {
+            model = remember(recipeImageUrl) {
                 ImageRequest.Builder(context)
-                    .data(recipe.imageUrl)
+                    .data(recipeImageUrl)
                     .crossfade(true)
                     .build()
             },
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
+            error = painterResource(R.drawable.img_error),
         )
 
         Crossfade(
@@ -98,8 +99,8 @@ fun RecipeHeader(
             onClick = {
                 ShareUtils.shareRecipe(
                     context = context,
-                    recipeId = recipe.id.toString(),
-                    recipeTitle = recipe.title,
+                    recipeId = recipeId.toString(),
+                    recipeTitle = recipeTitle,
                 )
             }
         )
@@ -112,7 +113,7 @@ fun RecipeHeader(
                 .padding(start = Dimens.standardPadding, bottom = Dimens.standardPadding)
         ) {
             Text(
-                text = recipe.title.uppercase(),
+                text = recipeTitle.uppercase(),
                 style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(Dimens.ttlPadding)
@@ -144,7 +145,9 @@ fun ScreenHeaderLightPreview() {
     val context = LocalContext.current
     RecipeComposeAppTheme {
         RecipeHeader(
-            RecipesRepositoryStub.getRecipesByRecipeId(0).toUiModel(),
+            "",
+            1,
+            "",
             context = context,
             isFavorite = false,
             onFavoriteToggle = {})
