@@ -19,7 +19,7 @@ import com.marinarodionova.recipecomposeapp.core.ui.ScreenHeader
 import com.marinarodionova.recipecomposeapp.features.recipes.ui.RecipeItem
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
-import com.marinarodionova.recipecomposeapp.features.favorites.model.FavoritesViewModel
+import com.marinarodionova.recipecomposeapp.features.favorites.presintation.FavoritesViewModel
 
 @Composable
 fun FavoritesScreen(
@@ -33,9 +33,9 @@ fun FavoritesScreen(
             stringResource(R.string.title_favorite),
             imageResId = R.drawable.bcg_favorites
         )
-        if (state.recipesList.isEmpty() and state.error.isEmpty()) {
+        if (state.recipesList.isEmpty() && state.error.isEmpty()) {
             EmptyPlaceholder(text = stringResource(R.string.information_message_favorite_list))
-        } else if (state.recipesList.isEmpty() and state.error.isNotEmpty()) {
+        } else if (state.recipesList.isEmpty() && state.error.isNotEmpty()) {
             EmptyPlaceholder(text = state.error)
         } else {
             LazyVerticalGrid(

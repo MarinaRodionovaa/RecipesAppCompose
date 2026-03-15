@@ -1,4 +1,4 @@
-package com.marinarodionova.recipecomposeapp.features.favorites.model
+package com.marinarodionova.recipecomposeapp.features.favorites.presintation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.viewModelScope
+import com.marinarodionova.recipecomposeapp.features.favorites.presintation.model.FavoritesUiState
 import kotlinx.coroutines.flow.SharingStarted
 
 class FavoritesViewModel(

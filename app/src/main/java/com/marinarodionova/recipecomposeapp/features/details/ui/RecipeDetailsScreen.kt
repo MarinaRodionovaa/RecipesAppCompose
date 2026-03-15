@@ -18,13 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,7 +37,6 @@ import com.marinarodionova.recipecomposeapp.features.details.presentation.Recipe
 private const val MIN_PORTIONS = 1
 private const val MAX_PORTIONS = 10
 private const val STEPS = 10
-private const val DEFAULT_PORTIONS = 1
 const val PINCH_TEXT = "щепотка"
 
 @Composable
@@ -48,8 +44,6 @@ fun RecipeDetailsScreen(
     viewModel: RecipeDetailsViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val portions = DEFAULT_PORTIONS
-    var currentPortions by rememberSaveable { mutableIntStateOf(portions) }
     val scaledIngredients = state.recalculatedIngredients
     val context = LocalContext.current
 
@@ -72,10 +66,9 @@ fun RecipeDetailsScreen(
         } else {
             item {
                 PortionsSlider(
-                    currentPortions = currentPortions,
+                    currentPortions = state.portionCount,
                     onPortionsChange = { newValue ->
                         viewModel.updatePortionCount(newValue)
-                        currentPortions = newValue
                     }
                 )
             }
