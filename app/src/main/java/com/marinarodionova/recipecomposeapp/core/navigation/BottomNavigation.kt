@@ -31,7 +31,7 @@ import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens.radiusSmall
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens.standardPadding
 import com.marinarodionova.recipecomposeapp.core.ui.theme.Dimens.ttlPadding
 import com.marinarodionova.recipecomposeapp.core.ui.theme.RecipeComposeAppTheme
-import com.marinarodionova.recipecomposeapp.features.favorites.model.FavoritesViewModel
+import com.marinarodionova.recipecomposeapp.features.favorites.presintation.FavoritesViewModel
 
 @Composable
 fun BottomNavigation(
