@@ -12,15 +12,16 @@ import androidx.compose.runtime.setValue
 import com.marinarodionova.recipecomposeapp.data.model.CategoryDto
 import com.marinarodionova.recipecomposeapp.data.model.RecipeDto
 import kotlinx.serialization.json.Json
-import java.net.HttpURLConnection
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.net.URL
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.io.bufferedReader
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf<Intent?>(null)
     private val threadPool: ExecutorService = Executors.newFixedThreadPool(10)
+    private val okHttpClient = OkHttpClient()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intent?.data?.let { _ ->
@@ -34,53 +35,60 @@ class MainActivity : ComponentActivity() {
         Log.i("!!!!", "Метод onCreate() выполняется на потоке: ${Thread.currentThread().name}")
         threadPool.execute {
             try {
-                val url = URL("https://recipes.androidsprint.ru/api/category")
-                val connection = url.openConnection() as HttpURLConnection
+                val request =
+                    Request.Builder().url("https://recipes.androidsprint.ru/api/category").build()
+                val response = okHttpClient.newCall(request).execute()
 
-                val categoriesJson = connection.inputStream.bufferedReader().use { it.readText() }
-                connection.disconnect()
+                val categoriesJson = response.body?.string()
 
                 Log.i("!POOL", "Запрос категорий: поток ${Thread.currentThread().name}")
 
-                val categoryList: List<CategoryDto> = Json.decodeFromString(categoriesJson)
+                val categoryList: List<CategoryDto>? = categoriesJson?.let {
+                    Json.decodeFromString(
+                        it
+                    )
+                }
 
                 Log.i(
                     "!!!!",
-                    "Категорий: ${categoryList.size}, ${categoryList.map { it.title }}"
+                    "Категорий: ${categoryList?.size}, ${categoryList?.map { it.title }}"
                 )
 
-                for (category in categoryList) {
-                    threadPool.execute {
-                        try {
-                            val urlRecipes = URL(
-                                "https://recipes.androidsprint.ru/api/category/${category.id}/recipes"
-                            )
-                            val connectionRecipes = urlRecipes.openConnection() as HttpURLConnection
+                if (categoryList != null) {
+                    for (category in categoryList) {
+                        threadPool.execute {
+                            try {
+                                val urlRecipes = URL(
+                                    "https://recipes.androidsprint.ru/api/category/${category.id}/recipes"
+                                )
+                                val requestRecipes = Request.Builder().url(urlRecipes).build()
+                                val responseRecipes = okHttpClient.newCall(requestRecipes).execute()
 
-                            val recipesJson = connectionRecipes.inputStream
-                                .bufferedReader()
-                                .use { it.readText() }
+                                val recipesJson = responseRecipes.body?.string()
 
-                            connectionRecipes.disconnect()
+                                Log.i(
+                                    "!POOL",
+                                    "Рецепты: поток ${Thread.currentThread().name}"
+                                )
 
-                            Log.i(
-                                "!POOL",
-                                "Рецепты: поток ${Thread.currentThread().name}"
-                            )
+                                val recipeList: List<RecipeDto>? = recipesJson?.let {
+                                    Json.decodeFromString(
+                                        it
+                                    )
+                                }
 
-                            val recipeList: List<RecipeDto> = Json.decodeFromString(recipesJson)
+                                Log.i(
+                                    "!!!!",
+                                    "Поток: ${Thread.currentThread().name}, категория: ${category.title}, рецептов: ${recipeList?.size}"
+                                )
 
-                            Log.i(
-                                "!!!!",
-                                "Поток: ${Thread.currentThread().name}, категория: ${category.title}, рецептов: ${recipeList.size}"
-                            )
-
-                        } catch (e: Exception) {
-                            Log.e(
-                                "!ERROR",
-                                "Ошибка при загрузке рецептов для категории: ${category.title} (id=${category.id})",
-                                e
-                            )
+                            } catch (e: Exception) {
+                                Log.e(
+                                    "!ERROR",
+                                    "Ошибка при загрузке рецептов для категории: ${category.title} (id=${category.id})",
+                                    e
+                                )
+                            }
                         }
                     }
                 }
